@@ -36,10 +36,10 @@ if [ -d "/data/adb/modules/FrameworkPatcherGo" ]; then
 fi
 
 # Check for playintegrityfix
-if [ -d "/data/adb/modules/playintegrityfix" ]; then
+if [ -d "/data/adb/modules/playintegrityfix" ] || [ -d "/data/adb/modules/tricky_store" ]; then
     :
 else
-    echo "You need Play Integrity Fix module!"
+    echo "You need Play Integrity Fix or Tricky Store Fork module!"
     rm "$0"
     exit 1
 fi
@@ -71,8 +71,6 @@ fi
 echo "[+] Deleting old pif.json"
 file_paths=(
     "/data/adb/pif.json"
-    "/data/adb/modules/playintegrityfix/pif.json"
-    "/data/adb/modules/playintegrityfix/custom.pif.json"
 )
 
 for file_path in "${file_paths[@]}"; do
@@ -100,11 +98,8 @@ echo
 ###################################################################
 # Download pif.json
 echo "[+] Downloading the pif.json"
-if [ -f /data/adb/modules/playintegrityfix/migrate.sh ]; then
-    /system/bin/curl -L "https://raw.githubusercontent.com/daboynb/autojson/main/osmosis.json" -o /data/adb/modules/playintegrityfix/custom.pif.json > /dev/null 2>&1 || /system/bin/curl -L "https://raw.githubusercontent.com/daboynb/autojson/main/osmosis.json" -o /data/adb/modules/playintegrityfix/custom.pif.json
-else
-    /system/bin/curl -L "https://raw.githubusercontent.com/daboynb/autojson/main/chiteroman.json" -o /data/adb/pif.json > /dev/null 2>&1 || /system/bin/curl -L "https://raw.githubusercontent.com/daboynb/autojson/main/chiteroman.json" -o /data/adb/pif.json
-fi
+/system/bin/curl -L "https://raw.githubusercontent.com/daboynb/autojson/main/chiteroman.json" -o /data/adb/pif.json > /dev/null 2>&1 || /system/bin/curl -L "https://raw.githubusercontent.com/daboynb/autojson/main/chiteroman.json" -o /data/adb/pif.json
+
 echo 
 
 # Kill gms processes and wallet
@@ -124,7 +119,7 @@ su -c "su -c 'pm trim-caches 999G' > /dev/null 2>&1"
 echo
 
 # Check if the pif is present
-if [ -f /data/adb/pif.json ] || [ -f /data/adb/modules/playintegrityfix/custom.pif.json ]; then
+if [ -f /data/adb/pif.json ]; then
     echo "[+] Pif.json downloaded successfully"
 else
     echo "[+] Pif.json is not present, something went wrong."
